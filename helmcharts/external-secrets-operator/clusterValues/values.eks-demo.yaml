@@ -1,0 +1,4 @@
+aws:
+  create: true
+  storeName: "aws-store"
+  roleArn: "arn:aws:iam::008469331115:role/eks-commerce-demo-external-secrets"
