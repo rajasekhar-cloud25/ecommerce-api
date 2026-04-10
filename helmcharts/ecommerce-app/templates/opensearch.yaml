@@ -20,6 +20,8 @@ spec:
         app: {{ .Release.Name }}
         component: opensearch
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         - name: sysctl
           image: busybox
