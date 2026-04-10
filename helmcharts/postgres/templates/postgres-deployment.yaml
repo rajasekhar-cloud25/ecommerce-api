@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-postgres
+  labels:
+    app: {{ .Release.Name }}
+    component: postgres
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  replicas: 1
+  serviceName: {{ .Release.Name }}-postgres-headless
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      component: postgres
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        component: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - name: tcp-pg
+              containerPort: 5432
+          env:
+              - name: PGDATA
+                value: /var/lib/postgresql/data/pgdata
+              - name: POSTGRES_DB
+                value: ecommerce_store
+              - name: POSTGRES_USER
+                value: ecommerce
+              - name: POSTGRES_PASSWORD
+                valueFrom:
+                    secretKeyRef:
+                        name: {{ .Release.Name }}-secrets
+                        key: POSTGRES_PASSWORD
+          volumeMounts:
+              - name: pg-data
+                mountPath: /var/lib/postgresql/data
+                subPath: postgres
+          resources:
+              requests:
+                  cpu: 100m
+                  memory: 256Mi
+              limits:
+                  cpu: 500m
+                  memory: 512Mi
+          readinessProbe:
+              exec:
+                  command:
+                      - pg_isready
+                      - -U
+                      - ecommerce
+                      - -d
+                      - ecommerce_store
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              timeoutSeconds: 3
+          livenessProbe:
+              exec:
+                  command:
+                      - pg_isready
+                      - -U
+                      - ecommerce
+                      - -d
+                      - ecommerce_store
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+          name: pg-data
+      spec:
+          accessModes:
+              - ReadWriteOnce
+          resources:
+              requests:
+                  storage: 5Gi
+          storageClassName: "gp2"

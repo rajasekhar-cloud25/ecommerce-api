@@ -1,0 +1,27 @@
+name: postgres
+backendServiceName: postgres
+app: postgres
+tier: database
+typePort: NodePort
+deploymentName: postgres
+replicaCount: 1
+imageName: postgres
+imageURL: postgres:17
+resourceManagement: true
+externalSecretSecretStore: aws-store
+#persistence
+persistentStorage: true
+persistentClaimName: postgres-pv-claim
+persistenceAccessMode: ReadWriteOnce
+persistenceSize: 10Gi
+storageClassName: gp2
+serviceLabelName: cluster01
+# requests and limits
+memoryLimits: 500Mi
+cpuLimits: 2
+memoryRequests: 500Mi
+cpuRequests: 65m
+# db users
+password: postgres
+user: store
+database: ecommerce-api
