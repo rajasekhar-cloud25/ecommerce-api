@@ -17,7 +17,7 @@ service:
 ingress:
   enabled: true
   className: nginx
-  host: rajstore.rajasekharcloud.com
+  host: eks-demo.rajasekharcloud.com
   tls: false
 
 app:
@@ -59,25 +59,25 @@ opensearch:
   storage: 5Gi
 
 config:
-  app_name: "Raj Store"
+  app_name: "Ecommerce Store"
   algorithm: "HS256"
   access_token_expire_minutes: "30"
 
-  db_host: "raj-store-postgres"
+  db_host: "postgres-postgres-0"
   db_port: "5432"
-  db_name: "raj_store"
+  db_name: "ecommerce_store"
 
   redis_host: "raj-store-redis"
   redis_port: "6379"
-  cache_enabled: "false"
+  cache_enabled: "true"
 
-  opensearch_enabled: "false"
+  opensearch_enabled: "true"
   opensearch_host: "raj-store-opensearch"
   opensearch_port: "9200"
 
-  otel_enabled: "false"
+  otel_enabled: "true"
   otel_service_name: "raj-store"
   otel_exporter_otlp_endpoint: "http://raj-store-otel-collector:4317"
 
-  stripe_success_url: "https://rajstore.rajasekharcloud.com/orders/stripe-success"
-  stripe_cancel_url: "https://rajstore.rajasekharcloud.com/cart?error=payment_cancelled"
+  stripe_success_url: "https://eks-demo.rajasekharcloud.com/orders/stripe-success"
+  stripe_cancel_url: "https://eks-demo.rajasekharcloud.com/cart?error=payment_cancelled"
