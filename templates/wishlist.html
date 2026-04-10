@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">My Wishlist</h1>
+
+    {% if items %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for item in items %}
+        <div class="bg-white border rounded-lg shadow-sm hover:shadow-md transition overflow-hidden">
+
+            <div class="aspect-square bg-gray-100 flex items-center justify-center">
+                {% if item.product.images and item.product.images.startswith('http') %}
+                <img src="{{ item.product.images }}" alt="{{ item.product.title }}" class="w-full h-full object-cover">
+                {% else %}
+                <img src="https://placehold.co/400x400?text={{ item.product.title }}" alt="{{ item.product.title }}" class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+
+            <div class="p-4">
+                <h2 class="font-semibold text-lg truncate">{{ item.product.title }}</h2>
+                <p class="text-sm text-gray-500 truncate">{{ item.product.brand }}</p>
+
+                <div class="mt-2">
+                    <span class="text-xl font-bold text-gray-900">${{ item.product.price }}</span>
+                </div>
+
+                <a href="/product/{{ item.product.id }}"
+                   class="block mt-3 bg-blue-500 text-white text-center py-2 rounded hover:bg-blue-600">
+                    View Product
+                </a>
+
+                <form action="/wishlist/remove-form" method="post" class="mt-2">
+                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                    <button type="submit"
+                            class="w-full text-center text-red-500 text-sm py-1 hover:underline">
+                        Remove from Wishlist
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+        <p class="text-gray-500 text-lg mb-4">Your wishlist is empty</p>
+        <a href="/" class="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600">
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

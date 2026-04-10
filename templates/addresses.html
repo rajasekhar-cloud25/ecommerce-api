@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}My Addresses{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">My Addresses</h1>
+
+    {% if request.query_params.get('added') %}
+    <div class="bg-green-100 text-green-800 px-4 py-3 rounded mb-6">
+        ✓ Address saved successfully
+    </div>
+    {% endif %}
+
+    <!-- Existing addresses -->
+    {% if addresses %}
+    <div class="space-y-4 mb-8">
+        {% for addr in addresses %}
+        <div class="bg-white rounded-lg shadow-sm p-6 {% if addr.is_default %}border-2 border-blue-500{% endif %}">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <h2 class="font-bold text-lg capitalize">{{ addr.first_name }} {{ addr.last_name }}</h2>
+                        {% if addr.is_default %}
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+                            DEFAULT
+                        </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-gray-700">{{ addr.address }}</p>
+                    <p class="text-gray-700">{{ addr.city }}, {{ addr.state }} {{ addr.zip_code }}</p>
+                    <p class="text-gray-700">{{ addr.country }}</p>
+                    <p class="text-sm text-gray-500 mt-2">📞 {{ addr.country_code }} {{ addr.phone_number }}</p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    {% if not addr.is_default %}
+                    <form action="/address/set-default-form" method="post">
+                        <input type="hidden" name="address_id" value="{{ addr.id }}">
+                        <button type="submit" class="text-blue-500 hover:underline text-sm">
+                            Set as default
+                        </button>
+                    </form>
+                    {% endif %}
+                    <form action="/address/delete-form" method="post">
+                        <input type="hidden" name="address_id" value="{{ addr.id }}">
+                        <button type="submit" class="text-red-500 hover:underline text-sm">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded mb-8">
+        You haven't added any addresses yet. Add one below to start shopping.
+    </div>
+    {% endif %}
+
+    <!-- Add new address form -->
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <h2 class="text-xl font-bold mb-4">Add New Address</h2>
+
+        <form action="/address/add-form" method="post" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">First Name</label>
+                    <input type="text" name="first_name" required minlength="4"
+                           class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Last Name</label>
+                    <input type="text" name="last_name" required minlength="4"
+                           class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1">Phone Number</label>
+                <div class="flex gap-2">
+                    <select name="country_code" required
+                            class="border rounded px-3 py-2 focus:outline-none focus:border-blue-500 w-32">
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+34">🇪🇸 +34</option>
+                        <option value="+39">🇮🇹 +39</option>
+                        <option value="+31">🇳🇱 +31</option>
+                        <option value="+41">🇨🇭 +41</option>
+                        <option value="+43">🇦🇹 +43</option>
+                        <option value="+32">🇧🇪 +32</option>
+                        <option value="+351">🇵🇹 +351</option>
+                        <option value="+353">🇮🇪 +353</option>
+                        <option value="+46">🇸🇪 +46</option>
+                        <option value="+47">🇳🇴 +47</option>
+                        <option value="+45">🇩🇰 +45</option>
+                        <option value="+358">🇫🇮 +358</option>
+                        <option value="+1">🇨🇦 +1</option>
+                        <option value="+971">🇦🇪 +971</option>
+                        <option value="+65">🇸🇬 +65</option>
+                        <option value="+91">🇮🇳 +91</option>
+                        <option value="+61">🇦🇺 +61</option>
+                        <option value="+64">🇳🇿 +64</option>
+                        <option value="+81">🇯🇵 +81</option>
+                        <option value="+82">🇰🇷 +82</option>
+                        <option value="+86">🇨🇳 +86</option>
+                    </select>
+                    <input type="tel" name="phone_number" required pattern="\d{7,15}"
+                           placeholder="Phone number"
+                           class="flex-1 border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1">Street Address</label>
+                <input type="text" name="address" required placeholder="123 Main St, Apt 4B"
+                       class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">City</label>
+                    <input type="text" name="city" required
+                           class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">State / Region</label>
+                    <input type="text" name="state" required
+                           list="us-states"
+                           placeholder="e.g. California, Bavaria"
+                           class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                    <datalist id="us-states">
+                        {% for s in us_states %}
+                        <option value="{{ s }}">
+                            {% endfor %}
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">ZIP Code</label>
+                    <input type="text" name="zip_code" required
+                           class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Country</label>
+                    <select name="country" required
+                            class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                        <option value="">Select country...</option>
+                        {% for c in countries %}
+                        <option value="{{ c }}">{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" name="is_default" value="true" class="rounded">
+                    <span class="text-sm">Set as default shipping address</span>
+                </label>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600">
+                Save Address
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }} - My Store{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- Breadcrumb -->
+    <div class="text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-blue-600">Shop</a>
+        <span class="mx-2">/</span>
+        <span>{{ product.title }}</span>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+
+        <!-- Image -->
+        <div class="aspect-square bg-gray-50 rounded-lg flex items-center justify-center">
+            <img src="{{ product.images }}"
+                 alt="{{ product.title }}"
+                 class="max-w-full max-h-full object-contain">
+        </div>
+
+        <!-- Info -->
+        <div class="flex flex-col">
+            <h1 class="text-3xl font-bold text-gray-900">{{ product.title }}</h1>
+            <p class="text-gray-500 mt-1">{{ product.brand }}</p>
+
+            <!-- Rating summary -->
+            {% if review_count > 0 %}
+            <div class="mt-2 flex items-center gap-2">
+                <div class="text-yellow-500">
+                    {% for i in range(5) %}
+                    {% if i < avg_rating|round(0, 'common') %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </div>
+                <span class="text-sm text-gray-600">
+                    {{ "%.1f"|format(avg_rating) }} ({{ review_count }} review{{ 's' if review_count != 1 else '' }})
+                </span>
+            </div>
+            {% endif %}
+
+            <div class="mt-4 flex items-baseline gap-3">
+                <span class="text-3xl font-bold text-gray-900">${{ product.price }}</span>
+                {% if product.discount_percentage > 0 %}
+                <span class="text-green-600 font-semibold">
+                    {{ product.discount_percentage }}% off
+                </span>
+                {% endif %}
+            </div>
+
+            <p class="mt-6 text-gray-700 leading-relaxed">
+                {{ product.description }}
+            </p>
+
+            <div class="mt-6">
+                {% if product.stock > 0 %}
+                <span class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">
+                    In stock: {{ product.stock }}
+                </span>
+                {% else %}
+                <span class="inline-block bg-red-100 text-red-800 text-sm font-semibold px-3 py-1 rounded-full">
+                    Out of stock
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Quantity + Add to cart -->
+            <form action="/cart/add-form" method="post" class="mt-8 flex gap-4 items-center">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+
+                <input type="number"
+                       name="quantity"
+                       value="1"
+                       min="1"
+                       max="{{ product.stock }}"
+                       class="w-20 border rounded px-3 py-2 text-center">
+
+                <button type="submit"
+                        class="flex-1 bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition"
+                        {% if product.stock == 0 %}disabled{% endif %}>
+                    Add to Cart
+                </button>
+            </form>
+
+            <!-- Add to Wishlist -->
+            {% if current_user %}
+            <form action="/wishlist/add-form" method="post" class="mt-3">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit"
+                        class="w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-50 transition">
+                    ♡ Add to Wishlist
+                </button>
+            </form>
+
+            {% if request.query_params.get('wishlist') == 'added' %}
+            <p class="mt-2 text-sm text-green-600">✓ Added to your wishlist</p>
+            {% endif %}
+            {% endif %}
+
+            <a href="/" class="mt-4 text-center text-blue-500 hover:underline">
+                ← Back to shop
+            </a>
+        </div>
+    </div>
+
+    <!-- Reviews section -->
+    <div class="mt-8 bg-white rounded-lg shadow-sm p-8">
+        <h2 class="text-2xl font-bold mb-4">Customer Reviews</h2>
+
+        <!-- Average rating summary -->
+        <div class="flex items-center gap-4 mb-6">
+            <div class="text-4xl font-bold text-yellow-500">
+                {{ "%.1f"|format(avg_rating) }}
+            </div>
+            <div>
+                <div class="text-yellow-500 text-xl">
+                    {% for i in range(5) %}
+                    {% if i < avg_rating|round(0, 'common') %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </div>
+                <p class="text-sm text-gray-500">{{ review_count }} review{{ 's' if review_count != 1 else '' }}</p>
+            </div>
+        </div>
+
+        <!-- Success/error messages -->
+        {% if request.query_params.get('review') == 'added' %}
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4 text-sm">
+            ✓ Thank you! Your review has been posted.
+        </div>
+        {% endif %}
+
+        {% if request.query_params.get('review_error') == 'must_buy' %}
+        <div class="bg-red-100 text-red-800 p-3 rounded mb-4 text-sm">
+            You must purchase this product before reviewing it.
+        </div>
+        {% endif %}
+
+        {% if request.query_params.get('review_error') == 'already_reviewed' %}
+        <div class="bg-red-100 text-red-800 p-3 rounded mb-4 text-sm">
+            You've already reviewed this product.
+        </div>
+        {% endif %}
+
+        <!-- Add review form -->
+        {% if current_user %}
+        {% if can_review and not already_reviewed %}
+        <div class="border rounded-lg p-4 mb-6 bg-gray-50">
+            <h3 class="font-semibold mb-3">Write a review</h3>
+            <form action="/reviews/add-form" method="post" class="space-y-3">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Rating</label>
+                    <select name="rating" required class="border rounded px-3 py-2">
+                        <option value="5">★★★★★ (5) Excellent</option>
+                        <option value="4">★★★★☆ (4) Good</option>
+                        <option value="3">★★★☆☆ (3) Average</option>
+                        <option value="2">★★☆☆☆ (2) Poor</option>
+                        <option value="1">★☆☆☆☆ (1) Terrible</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Your review</label>
+                    <textarea name="comment" required rows="3"
+                              placeholder="Share your experience with this product..."
+                              class="w-full border rounded px-3 py-2"></textarea>
+                </div>
+
+                <button type="submit"
+                        class="bg-blue-500 text-white px-4 py-2 rounded font-semibold hover:bg-blue-600">
+                    Submit Review
+                </button>
+            </form>
+        </div>
+        {% elif already_reviewed %}
+        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded mb-6 text-sm">
+            ✓ You've already reviewed this product. Thanks for your feedback!
+        </div>
+        {% else %}
+        <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded mb-6 text-sm">
+            Only customers who purchased this product can leave a review.
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="bg-gray-50 border border-gray-200 text-gray-700 p-4 rounded mb-6 text-sm">
+            <a href="/login" class="text-blue-500 hover:underline">Log in</a> to write a review.
+        </div>
+        {% endif %}
+
+        <!-- Reviews list -->
+        {% if reviews %}
+        <div class="space-y-4">
+            {% for review in reviews %}
+            <div class="border-b pb-4 last:border-b-0">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-semibold capitalize">{{ review.user.name if review.user else 'Anonymous' }}</p>
+                        <div class="text-yellow-500 text-sm">
+                            {% for i in range(5) %}
+                            {% if i < review.rating|round(0, 'common') %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400">{{ review.created_at.strftime('%b %d, %Y') }}</p>
+                </div>
+                <p class="mt-2 text-gray-700">{{ review.comment }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-center py-6">No reviews yet. Be the first to review this product!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

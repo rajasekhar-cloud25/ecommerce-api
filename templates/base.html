@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Raj Store{% endblock %}</title>
+
+    <!-- Favicon (inline SVG — no extra file needed) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%231d4ed8%22/><text x=%2250%22 y=%2268%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial,sans-serif%22 font-weight=%22bold%22>R</text></svg>">
+
+    <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<!-- Navbar -->
+<nav class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center gap-6">
+
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 flex-shrink-0">
+            <div class="w-9 h-9 bg-blue-700 text-white rounded-lg flex items-center justify-center font-bold text-lg shadow">
+                R
+            </div>
+            <span class="text-xl font-bold text-blue-700 tracking-tight">Raj Store</span>
+        </a>
+
+        <!-- Search -->
+        <form action="/" method="get" class="flex-1 max-w-xl">
+            <div class="relative">
+                <input type="text"
+                       name="search"
+                       value="{{ current_search or '' }}"
+                       placeholder="Search products, brands..."
+                       class="w-full border border-gray-200 rounded-full px-5 py-2 pl-10 focus:outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700">
+                <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+            </div>
+        </form>
+
+        <!-- Links -->
+        <div class="flex gap-5 items-center flex-shrink-0 text-sm">
+            <a href="/cart" class="text-gray-700 hover:text-blue-700 relative font-medium">
+                Cart
+                {% if cart_count and cart_count > 0 %}
+                <span class="absolute -top-2 -right-4 bg-blue-700 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {{ cart_count }}
+                    </span>
+                {% endif %}
+            </a>
+
+            {% if current_user %}
+            <a href="/wishlist" class="text-gray-700 hover:text-blue-700 font-medium">♡ Wishlist</a>
+            <a href="/orders" class="text-gray-700 hover:text-blue-700 font-medium">Orders</a>
+            <a href="/addresses" class="text-gray-700 hover:text-blue-700 font-medium">Addresses</a>
+            {% if current_user.is_admin %}
+            <a href="/admin" class="text-blue-700 font-bold hover:text-blue-900">Admin</a>
+            {% endif %}
+            <span class="text-gray-500">Hi, {{ current_user.name }}</span>
+            <a href="/auth/logout" class="text-red-600 hover:underline font-medium">Logout</a>
+            {% else %}
+            <a href="/login" class="text-gray-700 hover:text-blue-700 font-medium">Login</a>
+            <a href="/register" class="bg-blue-700 text-white px-4 py-2 rounded-full hover:bg-blue-800 font-medium">
+                Sign Up
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- Page content -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="bg-white border-t border-gray-200 mt-12">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Brand -->
+            <div>
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 bg-blue-700 text-white rounded-lg flex items-center justify-center font-bold">
+                        R
+                    </div>
+                    <span class="text-lg font-bold text-blue-700">Raj Store</span>
+                </div>
+                <p class="text-sm text-gray-500">
+                    Curated products from the world's top brands, delivered globally.
+                </p>
+            </div>
+
+            <!-- Shop links -->
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">Shop</h3>
+                <ul class="text-sm text-gray-500 space-y-2">
+                    <li><a href="/" class="hover:text-blue-700">All Products</a></li>
+                    <li><a href="/?sort=newest" class="hover:text-blue-700">New Arrivals</a></li>
+                    <li><a href="/?sort=price_asc" class="hover:text-blue-700">Best Deals</a></li>
+                </ul>
+            </div>
+
+            <!-- Account -->
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">Account</h3>
+                <ul class="text-sm text-gray-500 space-y-2">
+                    <li><a href="/orders" class="hover:text-blue-700">My Orders</a></li>
+                    <li><a href="/wishlist" class="hover:text-blue-700">Wishlist</a></li>
+                    <li><a href="/addresses" class="hover:text-blue-700">Addresses</a></li>
+                </ul>
+            </div>
+
+            <!-- About -->
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">About</h3>
+                <ul class="text-sm text-gray-500 space-y-2">
+                    <li><a href="#" class="hover:text-blue-700">Contact Us</a></li>
+                    <li><a href="#" class="hover:text-blue-700">Shipping Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-700">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 mt-8 pt-6 text-center text-sm text-gray-400">
+            © 2026 Raj Store. All rights reserved. Built with care.
+        </div>
+    </div>
+</footer>
+</body>
+</html>

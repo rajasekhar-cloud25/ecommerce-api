@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Admin Dashboard</h1>
+
+    <!-- Stats grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-sm text-gray-500">Total Products</p>
+            <p class="text-3xl font-bold mt-2">{{ total_products }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-sm text-gray-500">Total Orders</p>
+            <p class="text-3xl font-bold mt-2">{{ total_orders }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-sm text-gray-500">Pending Orders</p>
+            <p class="text-3xl font-bold mt-2 text-yellow-600">{{ pending_orders }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-sm text-gray-500">Total Users</p>
+            <p class="text-3xl font-bold mt-2">{{ total_users }}</p>
+        </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="/admin/orders" class="bg-white rounded-lg shadow p-6 hover:shadow-md transition">
+            <h2 class="font-semibold text-lg">Manage Orders →</h2>
+            <p class="text-sm text-gray-500 mt-1">View and update order status</p>
+        </a>
+        <a href="/admin/products" class="bg-white rounded-lg shadow p-6 hover:shadow-md transition">
+            <h2 class="font-semibold text-lg">Manage Products →</h2>
+            <p class="text-sm text-gray-500 mt-1">View all products</p>
+        </a>
+        <a href="/admin/users" class="bg-white rounded-lg shadow p-6 hover:shadow-md transition">
+            <h2 class="font-semibold text-lg">Manage Users →</h2>
+            <p class="text-sm text-gray-500 mt-1">View all customers</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

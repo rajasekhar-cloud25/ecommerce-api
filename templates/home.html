@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+        <!-- Sidebar filters -->
+        <aside class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4">
+                <h2 class="font-bold text-lg mb-4">Filters</h2>
+
+                <form action="/" method="get" class="space-y-4">
+                    <!-- Preserve search if active -->
+                    {% if current_search %}
+                    <input type="hidden" name="search" value="{{ current_search }}">
+                    {% endif %}
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Category</label>
+                        <select name="category_id" class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-700">
+                            <option value="">All categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}"
+                                    {% if current_category_id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Price range -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Price range ($)</label>
+                        <div class="flex gap-2">
+                            <input type="number"
+                                   name="min_price"
+                                   value="{{ current_min_price }}"
+                                   placeholder="Min"
+                                   min="0"
+                                   class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-700">
+                            <input type="number"
+                                   name="max_price"
+                                   value="{{ current_max_price }}"
+                                   placeholder="Max"
+                                   min="0"
+                                   class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-700">
+                        </div>
+                    </div>
+
+                    <!-- Sort -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Sort by</label>
+                        <select name="sort" class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-700">
+                            <option value="">Default</option>
+                            <option value="price_asc" {% if current_sort == "price_asc" %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if current_sort == "price_desc" %}selected{% endif %}>Price: High to Low</option>
+                            <option value="newest" {% if current_sort == "newest" %}selected{% endif %}>Newest</option>
+                        </select>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-blue-700 text-white py-2 rounded font-semibold hover:bg-blue-800 transition-colors">
+                        Apply Filters
+                    </button>
+
+                    <a href="/" class="block text-center text-sm text-gray-500 hover:underline">
+                        Clear all filters
+                    </a>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main product grid -->
+        <main class="lg:col-span-3">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold">
+                    {% if current_search %}
+                    Results for "{{ current_search }}"
+                    {% else %}
+                    Shop All Products
+                    {% endif %}
+                </h1>
+                <p class="text-gray-500">{{ products|length }} products</p>
+            </div>
+
+            {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for product in products %}
+                <div class="group bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+
+                    <!-- Image with zoom on hover -->
+                    <a href="/product/{{ product.id }}" class="block aspect-square bg-gray-100 overflow-hidden relative">
+                        {% if product.images and product.images.startswith('http') %}
+                        <img src="{{ product.images }}"
+                             alt="{{ product.title }}"
+                             class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110">
+                        {% else %}
+                        <img src="https://placehold.co/400x400?text={{ product.title }}"
+                             alt="{{ product.title }}"
+                             class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110">
+                        {% endif %}
+
+                        <!-- Discount badge -->
+                        {% if product.discount_percentage > 0 %}
+                        <span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                            -{{ "%.0f"|format(product.discount_percentage) }}%
+                        </span>
+                        {% endif %}
+                    </a>
+
+                    <!-- Info -->
+                    <div class="p-4">
+                        <h2 class="font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
+                            {{ product.title }}
+                        </h2>
+                        <p class="text-sm text-gray-500 truncate">{{ product.brand }}</p>
+
+                        <!-- Rating -->
+                        {% if product.review_count and product.review_count > 0 %}
+                        <div class="mt-1 flex items-center gap-1 text-sm">
+                            <span class="text-yellow-500">
+                                {% for i in range(5) %}
+                                    {% if i < product.avg_rating|round(0, 'common') %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="text-gray-500 text-xs">({{ product.review_count }})</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="mt-2">
+                            <span class="text-xl font-bold text-gray-900">${{ product.price }}</span>
+                        </div>
+
+                        <a href="/product/{{ product.id }}"
+                           class="block mt-3 bg-blue-700 text-white text-center py-2 rounded-lg font-medium transition-all duration-300 hover:bg-blue-800 transform group-hover:scale-105">
+                            View Product
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+                <p class="text-gray-500 text-lg mb-4">No products match your filters</p>
+                <a href="/" class="text-blue-700 hover:underline">Clear filters</a>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}

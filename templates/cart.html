@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart - My Store{% endblock %}
+
+{% block content %}
+{% if request.query_params.get('added') %}
+<div class="bg-green-100 text-green-800 px-4 py-3 rounded mb-4">
+    ✓ Item added to your cart
+</div>
+{% endif %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+    <h1 class="text-3xl font-bold mb-8">Your Cart</h1>
+
+    {% if cart and cart.cart_items %}
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+
+        <!-- Cart items -->
+        {% for item in cart.cart_items %}
+        <div class="flex items-center gap-4 p-4 border-b last:border-b-0">
+
+            <!-- Image -->
+            <div class="w-24 h-24 bg-gray-50 rounded flex items-center justify-center flex-shrink-0">
+                <img src="{{ item.product.images }}"
+                     alt="{{ item.product.title }}"
+                     class="max-w-full max-h-full object-contain">
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1">
+                <h2 class="font-semibold text-lg">
+                    <a href="/product/{{ item.product.id }}" class="hover:text-blue-600">
+                        {{ item.product.title }}
+                    </a>
+                </h2>
+                <p class="text-sm text-gray-500">{{ item.product.brand }}</p>
+                <p class="text-gray-900 font-bold mt-1">${{ item.product.price }}</p>
+            </div>
+
+            <!-- Quantity -->
+            <div class="text-center">
+                <p class="text-sm text-gray-500">Qty</p>
+                <p class="font-semibold text-lg">{{ item.quantity }}</p>
+            </div>
+
+            <!-- Subtotal -->
+            <div class="text-right w-24">
+                <p class="text-sm text-gray-500">Subtotal</p>
+                <p class="font-bold text-lg">${{ "%.2f"|format(item.product.price * item.quantity) }}</p>
+            </div>
+
+            <!-- Remove button -->
+            <form action="/cart/remove-form" method="post">
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <button type="submit"
+                        class="text-red-500 hover:text-red-700 px-3 py-2"
+                        title="Remove">
+                    ✕
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+
+        <!-- Total + Checkout -->
+        <div class="p-6 bg-gray-50 border-t">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xl text-gray-700">Total</span>
+                <span class="text-3xl font-bold">${{ "%.2f"|format(total) }}</span>
+            </div>
+
+            <form action="/orders/checkout-form" method="post">
+                <button type="submit"
+                        class="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition">
+                    Proceed to Checkout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty cart -->
+    <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+        <p class="text-gray-500 text-lg mb-4">Your cart is empty</p>
+        <a href="/" class="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600">
+            Continue Shopping
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
