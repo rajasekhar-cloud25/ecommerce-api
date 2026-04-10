@@ -31,8 +31,29 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
-            - secretRef:
-                name: {{ .Release.Name }}-secrets
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: postgres-secrets
+            - name: DB_USER
+              value: "ecommerce"
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: STRIPE_SECRET_KEY
+                  name: postgres-secrets
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: SECRET_KEY
+            - name: STRIPE_PUBLISHABLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: STRIPE_PUBLISHABLE_KEY
           livenessProbe:
             httpGet:
               path: /healthz
