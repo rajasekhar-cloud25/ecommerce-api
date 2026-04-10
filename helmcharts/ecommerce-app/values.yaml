@@ -1,6 +1,6 @@
 image:
   repository: 008469331115.dkr.ecr.us-east-1.amazonaws.com/ecommerce-api
-  tag: 9bb4a8256eab4c36899b5d48588a86bb63e7f123
+  tag: 2b9e87151ad29bab6a772822a515f017f1f6b3fe
   pullPolicy: Always
 
 replicaCount: 1

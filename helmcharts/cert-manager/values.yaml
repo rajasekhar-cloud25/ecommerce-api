@@ -413,7 +413,7 @@ controller:
       eks.amazonaws.com/role-arn: arn:aws:iam::008469331115:role/eks-commerce-demo-cert-manager
     ## @param controller.serviceAccount.automountServiceAccountToken Automount service account token for the server service account
     ##
-    automountServiceAccountToken: false
+    automountServiceAccountToken: true
   ## Controller Network Policies
   ## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
   ##
