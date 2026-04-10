@@ -1,0 +1,8 @@
+apiVersion: v2
+name: ecommerce-store
+description: Full-stack ecommerce platform with FastAPI
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: Rajasekhar Reddy

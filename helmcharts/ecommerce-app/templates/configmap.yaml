@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app: {{ .Release.Name }}
+data:
+  APP_NAME: {{ .Values.config.app_name | quote }}
+  ALGORITHM: {{ .Values.config.algorithm | quote }}
+  ACCESS_TOKEN_EXPIRE_MINUTES: {{ .Values.config.access_token_expire_minutes | quote }}
+
+  DB_HOST: {{ .Values.config.db_host | quote }}
+  DB_PORT: {{ .Values.config.db_port | quote }}
+  DB_NAME: {{ .Values.config.db_name | quote }}
+
+  REDIS_HOST: {{ .Values.config.redis_host | quote }}
+  REDIS_PORT: {{ .Values.config.redis_port | quote }}
+  CACHE_ENABLED: {{ .Values.config.cache_enabled | quote }}
+
+  OPENSEARCH_ENABLED: {{ .Values.config.opensearch_enabled | quote }}
+  OPENSEARCH_URL: "http://{{ .Values.config.opensearch_host }}:{{ .Values.config.opensearch_port }}"
+  OPENSEARCH_INDEX_PRODUCTS: "products"
+
+  OTEL_ENABLED: {{ .Values.config.otel_enabled | quote }}
+  OTEL_SERVICE_NAME: {{ .Values.config.otel_service_name | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otel_exporter_otlp_endpoint | quote }}
+
+  STRIPE_SUCCESS_URL: {{ .Values.config.stripe_success_url | quote }}
+  STRIPE_CANCEL_URL: {{ .Values.config.stripe_cancel_url | quote }}

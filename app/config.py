@@ -7,12 +7,22 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
-    # Database — defaults to SQLite for local dev, PostgreSQL in production via env var
-    database_url: str = "sqlite:///db.ecommerce.db"
+    # Database — individual parts, assembled in database.py
+    db_host: str = "localhost"
+    db_port: str = "5432"
+    db_name: str = "raj_store"
+    db_user: str = "raj"
+    db_password: str = ""
 
-    # Redis cache
-    redis_url: str = "redis://localhost:6379/0"
-    cache_enabled: bool = False  # set True in production
+    # For local dev with SQLite, set this to override everything above
+    database_url: str = ""
+
+    # Redis
+    redis_host: str = "localhost"
+    redis_port: str = "6379"
+    redis_password: str = ""
+    redis_url: str = ""   # override for local dev
+    cache_enabled: bool = False
 
     # Stripe
     stripe_secret_key: str = ""
@@ -26,10 +36,10 @@ class Settings(BaseSettings):
     otel_service_name: str = "raj-store"
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
 
-    # OpenSearch (for log shipping)
+    # OpenSearch
     opensearch_enabled: bool = False
     opensearch_url: str = "http://localhost:9200"
-    opensearch_index: str = "raj-store-logs"
+    opensearch_index_products: str = "products"
 
     class Config:
         env_file = ".env"

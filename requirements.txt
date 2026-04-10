@@ -40,6 +40,8 @@ opentelemetry-semantic-conventions==0.62b0
 opentelemetry-util-http==0.62b0
 packaging==26.0
 passlib==1.7.4
+prometheus-fastapi-instrumentator==7.1.0
+prometheus_client==0.25.0
 protobuf==6.33.6
 psycopg2-binary==2.9.11
 pyasn1==0.6.3

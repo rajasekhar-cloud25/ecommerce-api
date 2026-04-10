@@ -1,0 +1,83 @@
+image:
+  repository: 008469331115.dkr.ecr.us-east-1.amazonaws.com/ecommerce-api
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 2
+
+aws:
+  region: us-east-1
+  eso_role_arn: "arn:aws:iam::CHANGE_ME:role/CHANGE_ME-external-secrets"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  host: rajstore.rajasekharcloud.com
+  tls: false
+
+app:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+postgres:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  storage: 5Gi
+
+redis:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+opensearch:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  storage: 5Gi
+
+config:
+  app_name: "Raj Store"
+  algorithm: "HS256"
+  access_token_expire_minutes: "30"
+
+  db_host: "raj-store-postgres"
+  db_port: "5432"
+  db_name: "raj_store"
+
+  redis_host: "raj-store-redis"
+  redis_port: "6379"
+  cache_enabled: "false"
+
+  opensearch_enabled: "false"
+  opensearch_host: "raj-store-opensearch"
+  opensearch_port: "9200"
+
+  otel_enabled: "false"
+  otel_service_name: "raj-store"
+  otel_exporter_otlp_endpoint: "http://raj-store-otel-collector:4317"
+
+  stripe_success_url: "https://rajstore.rajasekharcloud.com/orders/stripe-success"
+  stripe_cancel_url: "https://rajstore.rajasekharcloud.com/cart?error=payment_cancelled"

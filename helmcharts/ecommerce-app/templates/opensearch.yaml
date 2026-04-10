@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-opensearch
+  labels:
+    app: {{ .Release.Name }}
+    component: opensearch
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: 1
+  serviceName: {{ .Release.Name }}-opensearch-headless
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      component: opensearch
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        component: opensearch
+    spec:
+      initContainers:
+        - name: sysctl
+          image: busybox
+          command: ["sysctl", "-w", "vm.max_map_count=262144"]
+          securityContext:
+            privileged: true
+      containers:
+        - name: opensearch
+          image: opensearchproject/opensearch:2.17.0
+          ports:
+            - name: http-os
+              containerPort: 9200
+            - name: transport
+              containerPort: 9300
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: DISABLE_SECURITY_PLUGIN
+              value: "true"
+            - name: OPENSEARCH_JAVA_OPTS
+              value: "-Xms256m -Xmx256m"
+          volumeMounts:
+            - name: os-data
+              mountPath: /usr/share/opensearch/data
+          resources:
+            {{- toYaml .Values.opensearch.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: http-os
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: http-os
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: os-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: gp2
+        resources:
+          requests:
+            storage: {{ .Values.opensearch.storage }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-opensearch
+  labels:
+    app: {{ .Release.Name }}
+    component: opensearch
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9200
+      targetPort: http-os
+      name: http-os
+  selector:
+    app: {{ .Release.Name }}
+    component: opensearch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-opensearch-headless
+  labels:
+    app: {{ .Release.Name }}
+    component: opensearch
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 9200
+      targetPort: http-os
+      name: http-os
+  selector:
+    app: {{ .Release.Name }}
+    component: opensearch

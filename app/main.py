@@ -11,6 +11,7 @@ from app.routers import (
     order, review, pages, admin,
 )
 
+from prometheus_fastapi_instrumentator import Instrumentator
 from app.otel import setup_telemetry
 from app.seed_data import seed_database
 from app.services.search_sync import reindex_all_products
@@ -52,6 +53,9 @@ app = FastAPI(
 
 # 4. Set up OpenTelemetry (no-op if disabled)
 setup_telemetry(app, engine)
+
+# prometheus metrics
+Instrumentator().instrument(app).expose(app)
 
 # 4. Static + templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
