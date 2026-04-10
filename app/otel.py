@@ -3,6 +3,12 @@ OpenTelemetry tracing setup. No-op when OTEL_ENABLED is false.
 """
 from app.config import settings
 
+def exclude_health_endpoints(scope):
+    """Filter out health/readiness probes and metrics from traces."""
+    path = scope.get("path", "")
+    if path in ["/healthz", "/readyz", "/metrics"]:
+        return None
+    return path
 
 def setup_telemetry(app, engine):
     """Configure OpenTelemetry tracing. Safe to call even when disabled."""
@@ -30,7 +36,7 @@ def setup_telemetry(app, engine):
         provider.add_span_processor(BatchSpanProcessor(exporter))
         trace.set_tracer_provider(provider)
 
-        FastAPIInstrumentor.instrument_app(app)
+        FastAPIInstrumentor.instrument_app(app, excluded_urls="healthz,readyz,metrics")
         SQLAlchemyInstrumentor().instrument(engine=engine)
         RequestsInstrumentor().instrument()
 
