@@ -18,7 +18,7 @@ ingress:
   enabled: true
   className: nginx
   host: eks-demo.rajasekharcloud.com
-  tls: false
+  tls: true
 
 app:
   resources:
