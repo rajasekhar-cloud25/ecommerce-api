@@ -3,7 +3,7 @@ image:
   tag: 9bb4a8256eab4c36899b5d48588a86bb63e7f123
   pullPolicy: Always
 
-replicaCount: 2
+replicaCount: 1
 
 aws:
   region: us-east-1
