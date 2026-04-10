@@ -87,9 +87,9 @@ controller:
   ## @param controller.image.debug Controller image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/cert-manager
-    tag: 1.18.2-debian-12-r5
+    registry: quay.io
+    repository: jetstack/cert-manager-controller
+    tag: v1.18.2
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -117,9 +117,9 @@ controller:
     ## @param controller.acmesolver.image.debug Controller image debug mode
     ##
     image:
-      registry: docker.io
-      repository: bitnami/acmesolver
-      tag: 1.18.2-debian-12-r5
+      registry: quay.io
+      repository: jetstack/cert-manager-controller
+      tag: v1.18.2
       digest: ""
       ## Specify a imagePullPolicy
       ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -498,9 +498,9 @@ webhook:
   ## @param webhook.image.debug Webhook image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/cert-manager-webhook
-    tag: 1.18.2-debian-12-r5
+    registry: quay.io
+    repository: jetstack/cert-manager-webhook
+    tag: v1.18.2
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -865,9 +865,9 @@ cainjector:
   ## @param cainjector.image.debug CAInjector image debug mode
   ##
   image:
-    registry: uikubernetescontainerregistry.azurecr.io
-    repository: bitnami/cainjector
-    tag: 1.17.1-debian-12-r2
+    registry: quay.io
+    repository: jetstack/cert-manager-cainjector
+    tag: v1.18.2
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
