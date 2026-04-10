@@ -63,7 +63,7 @@ config:
   algorithm: "HS256"
   access_token_expire_minutes: "30"
 
-  db_host: "postgres-postgres-0"
+  db_host: "postgres-postgres"
   db_port: "5432"
   db_name: "ecommerce_store"
 
