@@ -66,8 +66,8 @@ A production-ready ecommerce platform built with FastAPI, featuring authenticati
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/raj-store.git
-cd raj-store
+git clone https://github.com/rajasekhar-cloud25/ecommerce-api.git
+cd ecommerce-api
 
 # Create virtual environment
 python3 -m venv venv
