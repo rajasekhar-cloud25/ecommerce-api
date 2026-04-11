@@ -53,7 +53,7 @@ def login_form(
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,
+        secure=True,
         samesite="lax",
         max_age=1800
     )
@@ -63,7 +63,7 @@ def login_form(
 @router.get("/logout")
 def logout():
     response = RedirectResponse(url="/login", status_code=302)
-    response.delete_cookie(key="access_token")
+    response.delete_cookie(key="access_token", path="/")
     return response
 
 
