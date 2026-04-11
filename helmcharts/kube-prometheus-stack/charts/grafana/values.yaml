@@ -762,26 +762,7 @@ alerting: {}
 ## Configure notifiers
 ## ref: http://docs.grafana.org/administration/provisioning/#alert-notification-channels
 ##
-notifiers:
-  notifiers.yaml:
-    notifiers:
-      - name: '#grafana-alert-notifications'
-        type: slack
-        uid: slack1
-        org_id: 2
-        is_default: true
-        send_reminder: true
-        disable_resolve_message: false
-        settings:
-          # <string>
-          username: Grafana-Alert-Notifications
-          # <string> Optionally provide a Slack incoming webhook URL for sending messages, in this case the token isn't necessary
-          url: $(Values.Grafana.Slack.WebhookUrl)
-          # <string>
-          title: |
-            {{ template "slack.default.title" . }}
-          text: |
-            {{ template "slack.default.text" . }}
+notifiers: {}
 #  notifiers.yaml:
 #    notifiers:
 #    - name: email-notifier
@@ -807,7 +788,7 @@ dashboardProviders:
     providers:
     - name: 'default'
       orgId: 1
-      folder: 'uiDashboards'
+      folder: 'Dashboards'
       type: file
       disableDeletion: false
       editable: true
@@ -821,28 +802,8 @@ dashboardProviders:
 ##
 ## dashboards per provider, use provider name as key.
 ##
-dashboards:
-   default:
-     urbanPulseConnectors:
-       file: dashboards/urbanPulseConnectors.json
-     cockpitHealthStatus:
-       file: dashboards/cockpitHealthStatus.json
-     PersistentVolumeAlerts:
-       file: dashboards/Kubernetes-Persistent_Volume_Alerts.json
-     NginxIngressController:
-       file: dashboards/nginx-ingress-controller.json
-     ElasticSearch:
-       file: dashboards/ElasticSearch.json
-     Urbanpulse:
-       file: dashboards/UrbanPulse.json
-     OpenSearchFlowLogs:
-       file: dashboards/OpenSearchLogsFlow.json
-     PersistentAlerts:
-       file: dashboards/PersistenceAlert.json
-     RequestLimitUsage:
-       file: dashboards/RequestLimitsUsage.json
-     VaisalaMqttConnector:
-       file: dashboards/VaisalaMqttConnector.json
+dashboards: {}
+
   #   some-dashboard:
   #     json: |
   #       $RAW_JSON
