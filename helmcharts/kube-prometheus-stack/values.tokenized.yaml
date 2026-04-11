@@ -17,7 +17,7 @@ grafana:
   persistence:
     type: pvc
     enabled: true
-    storageClassName: default
+    storageClassName: gp2
     accessModes:
       - ReadWriteOnce
     size: 5Gi
